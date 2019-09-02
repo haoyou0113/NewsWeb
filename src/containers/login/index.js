@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link, withRouter } from 'react-router-dom';
 import './style.css';
 import axios from 'axios';
 import { Button } from 'antd';
@@ -33,20 +34,32 @@ class Login extends Component {
     this.setState({ password: e.target.value });
   }
   checkLogout() {
-    this.setState({ login: false, modal: false });
+    axios
+      .get('http://www.dell-lee.com/react/api/logout.json', {
+        withCredentials: true
+      })
+      .then(res => {
+        const data = res.data.data;
+        if (data.logout) {
+          this.setState({ login: false });
+        }
+        this.props.history.push('/');
+        // 退出以后跳回首页
+      });
   }
   checkLogin(e) {
     const { user, password } = this.state;
     const url = `http://www.dell-lee.com/react/api/login.json?user=${user}&password=${password}`;
     // 把用户名和密码带给接口
     console.log(e.keyCode);
-    axios.get(url).then(res => {
+    axios.get(url, { withCredentials: true }).then(res => {
+      // withCredentials 防止刷新取消登录
       const login = res.data.data.login;
       if (login) {
         message.success('Login success');
         this.setState({ login: true, modal: false });
       } else {
-        message.error('Wrong username of password');
+        message.error('Wrong username or password');
       }
     });
   }
@@ -63,6 +76,11 @@ class Login extends Component {
             Login
           </Button>
         )}
+        <Link to='/vip'>
+          <Button type='primary' style={{ marginLeft: 10 }}>
+            VIP
+          </Button>
+        </Link>
         <Modal
           title='Login'
           visible={this.state.modal}
@@ -87,11 +105,16 @@ class Login extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://www.dell-lee.com/react/api/isLogin.json').then(res => {
-      const login = res.data.data.login;
-      this.setState({ login: login });
-    });
+    axios
+      .get('http://www.dell-lee.com/react/api/isLogin.json', {
+        withCredentials: true
+      })
+      .then(res => {
+        const login = res.data.data.login;
+        this.setState({ login: login });
+      });
   }
 }
 
-export default Login;
+export default withRouter(Login);
+// 利用withrouter 似的子组件获取路由信息 路由跳转

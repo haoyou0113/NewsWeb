@@ -4,6 +4,7 @@ import AppHeader from './Components/Header';
 import List from './containers/List';
 import Detail from './containers/Detail';
 import Login from './containers/login';
+import Vip from './containers/VIP';
 import 'antd/dist/antd.css';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Layout } from 'antd';
@@ -24,6 +25,7 @@ class App extends Component {
             <Login />
             <Switch>
               <Route path='/detail/:id' component={Detail} />
+              <Route path='/vip' component={Vip} />
               {/* /:id 进入下一页面所带的参数 */}
               <Route path='/:id?' component={List} />
               {/* id?表示id 可有可无 */}
